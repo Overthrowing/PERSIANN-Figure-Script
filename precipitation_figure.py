@@ -1,7 +1,5 @@
-# Plot generator for the PERSIANN database ()
+# Plot generator for the PERSIANN database around the Houston area.
 # Author: David Rodriguez Sanchez (david.rodriguez24@tamu.edu)
-#
-#
 
 import os
 
@@ -57,7 +55,11 @@ def plot_data(filename, params):
         plt.colorbar(mappable=mpl.cm.ScalarMappable(norm=mpl.colors.BoundaryNorm(bounds, cmap.N, extend='both'), cmap=cmap))
 
         plt.title(params['Title'] + f"({(window * 3 * 60 * 60)}-{(window + 1) * 3 * 60 * 60} sec UTC)")
-        figure_out = os.path.join("PERSIANN-20230427_00_21", "out", f"{params['Date']}_{window * 3}_{(window + 1) * 3}")
+
+        figure_out = os.path.join("out", f"{params['Date']}_{window * 3}_{(window + 1) * 3}")
+        if not os.path.exists("out"):
+            os.mkdir("out")
+
         plt.savefig(figure_out)
         plt.close()
 
@@ -65,6 +67,7 @@ def plot_data(filename, params):
 # Change for the corresponding NCDF4 dataset.
 filename = 'PERSIANN-20230427_00_21/PERSIANN_2023-05-11090801am.nc'
 
+# Parameters to change the title and date of case.
 params = {
     'Title' : 'April 27 Case',
     'Date'  : '20230427'
