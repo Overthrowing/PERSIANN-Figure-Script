@@ -1,5 +1,6 @@
 # Plot generator for the PERSIANN database around the Houston area.
 # Author: David Rodriguez Sanchez (david.rodriguez24@tamu.edu)
+# Date: May 15 2023
 
 import os
 
