@@ -39,7 +39,7 @@ def get_data(filepath):
             if(row[0] != "pos") and (row[0] != "neg") : continue
             time.append(float(row[1]))
             chargeEvent.append([row[0], float(row[2]), float(row[3])])
-            longLat.append([row[-2], row[-3]])
+            longLat.append([row[-1], row[-2]])
 
     chargepol = { "Timestamp" : time,    # Time of event
                   "Charge": chargeEvent, # Type of charge, length and starting altitude

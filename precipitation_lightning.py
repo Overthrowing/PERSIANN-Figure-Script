@@ -22,15 +22,18 @@ from scipy.stats import gaussian_kde
 import numpy as np
 
 # Path to PERSIANN .nc file.
+PERSIANN = "PERSIANN-files/PERSIANN_20230506/PERSIANN_2023-05-17082404pm.nc"
 # Path to Chargepol .csv file
-PERSIANN = "PERSIANN-20230407/PERSIANN_2023-05-17081150am.nc"
-Chargepol = "Chargepol/chargepol_20230407.csv"
+Chargepol = "Chargepol/chargepol_out/chargepol_230506.csv"
 
 params = {
     "Filename": "lighning_precip_out",
-    "Title"   : "April 07 2023 Case",
-    "Date"    : "20230407"
+    "Title"   : "May 06 2023 Case",
+    "Date"    : "20230506"
 }
+
+# Determines the minimum precipitation to plot
+min_precip = 0.5
 
 def createLocationList(data):
     negPos = [[],[]] # Index 0 are all longitudes, index 1 are all latitudes
@@ -96,9 +99,22 @@ def plot(chp_data, params):
     ax00.xaxis.tick_top()
     ax00.xaxis.set_label_position('top')
     ax00.set_title("Lightning Information")
+    ax00.grid()
 
     # PERSIANN Historgram
     ax01 = fig.add_subplot(spec[0,1])
+    total_precip = np.ravel(data_precip)
+
+    ax01.hist(total_precip[total_precip > min_precip], bins=int(sqrt(total_precip.size)), density=True, color='#004080')
+
+    ax01.set(xlabel="Amount of precipitation (mm)",ylabel="Density")
+    ax01.xaxis.tick_top()
+    ax01.xaxis.set_label_position('top')
+    ax01.yaxis.tick_right()
+    ax01.yaxis.set_label_position('right')
+    ax01.set_title("Precipitation Information")
+    ax01.grid()
+
 
     # Lightning Houston Map scatter
     ax10 = fig.add_subplot(spec[1:,0], projection=ccrs.PlateCarree())
@@ -136,9 +152,11 @@ def plot(chp_data, params):
         crs=ccrs.PlateCarree()
     )
 
-    for window in range(len(data_precip)):
-        ax11.contourf(data_lon, data_lat, data_precip[window, :, :], 60, cmap='plasma',
-                     transform=ccrs.PlateCarree())
+    total_precip = np.zeros(shape=data_precip[0].shape)
+    for window in data_precip:
+        total_precip += window
+    ax11.contourf(data_lon, data_lat, total_precip, 60, cmap='plasma',
+                 transform=ccrs.PlateCarree())
 
     # Creating grid lines
     grid_lines = ax11.gridlines(crs=ccrs.PlateCarree(), draw_labels=True)
@@ -175,3 +193,4 @@ shp_name = os.path.join("Shapefile", "County.shp")
 chp_data = process_chargepol.get_data(Chargepol)
 
 plot(chp_data, params)
+print("Done.")

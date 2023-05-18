@@ -13,7 +13,10 @@ from cartopy.mpl.gridliner import LATITUDE_FORMATTER, LONGITUDE_FORMATTER
 from cartopy.io.shapereader import Reader
 from cartopy.feature import ShapelyFeature
 
-shp_name = os.path.join("PERSIANN-20230427_00_21", "Shapefile", "County.shp")
+shp_name = os.path.join("Shapefile", "County.shp")
+
+# The PERSIANN timestep from download.
+timestep = 1
 
 def read_NCDF4(filename):
     dataset = netCDFFile(filename, 'r')
@@ -55,9 +58,12 @@ def plot_data(filename, params):
 
         plt.colorbar(mappable=mpl.cm.ScalarMappable(norm=mpl.colors.BoundaryNorm(bounds, cmap.N, extend='both'), cmap=cmap))
 
-        plt.title(params['Title'] + f"({(window * 3 * 60 * 60)}-{(window + 1) * 3 * 60 * 60} sec UTC)")
+        plt.title(params['Title'] + f" ({(window * timestep * 60 * 60)}-{(window + 1) * timestep * 60 * 60} sec UTC)")
 
-        figure_out = os.path.join("out", f"{params['Date']}_{window * 3}_{(window + 1) * 3}")
+        if not os.path.exists(os.path.join("out", params['Date'])):
+            os.mkdir(os.path.join("out", params['Date']))
+
+        figure_out = os.path.join("out", params['Date'], f"{params['Date']}_{window * timestep}_{(window + 1) * timestep}")
         if not os.path.exists("out"):
             os.mkdir("out")
 
@@ -66,12 +72,13 @@ def plot_data(filename, params):
 
 
 # Change for the corresponding NCDF4 dataset.
-filename = 'PERSIANN-20230427_00_21/PERSIANN_2023-05-11090801am.nc'
+filename = 'PERSIANN-files/PERSIANN_20230507/PERSIANN_2023-05-17080330pm.nc'
 
 # Parameters to change the title and date of case.
 params = {
-    'Title' : 'April 27 Case',
-    'Date'  : '20230427'
+    'Title' : 'May 07 Case',
+    'Date'  : '20230507'
 }
 
 plot_data(filename, params)
+print("Done.")
