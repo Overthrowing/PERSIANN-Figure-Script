@@ -25,7 +25,7 @@ params = {
 }
 
 # The PERSIANN timestep from download.
-timestep = 3
+timestep = 1
 
 def read_NCDF4(filename):
     dataset = netCDFFile(filename, 'r')
