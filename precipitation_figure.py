@@ -1,5 +1,6 @@
 # Plot generator for the PERSIANN database around the Houston area.
 # Author: David Rodriguez Sanchez (david.rodriguez24@tamu.edu)
+# Date: May 15 2023
 
 import os
 
@@ -12,7 +13,19 @@ from cartopy.mpl.gridliner import LATITUDE_FORMATTER, LONGITUDE_FORMATTER
 from cartopy.io.shapereader import Reader
 from cartopy.feature import ShapelyFeature
 
-shp_name = os.path.join("PERSIANN-20230427_00_21", "Shapefile", "County.shp")
+
+# Change for the corresponding NCDF4 dataset.
+filename = 'PDIR-files/PDIR-Nicholas-Data/PDIR_2023-05-24022800pm.nc'
+
+# Parameters to change the title and date of case.
+params = {
+    'Title'             : 'Hurricane Nicholas data - PDIR',
+    'Output-dir-name'   : 'Nicholas-Data-3hr',
+    'Date'              : '20210914-15'
+}
+
+# The PERSIANN timestep from download.
+timestep = 3
 
 def read_NCDF4(filename):
     dataset = netCDFFile(filename, 'r')
@@ -54,23 +67,20 @@ def plot_data(filename, params):
 
         plt.colorbar(mappable=mpl.cm.ScalarMappable(norm=mpl.colors.BoundaryNorm(bounds, cmap.N, extend='both'), cmap=cmap))
 
-        plt.title(params['Title'] + f"({(window * 3 * 60 * 60)}-{(window + 1) * 3 * 60 * 60} sec UTC)")
+        plt.title(params['Title'] + f" ({(window * timestep * 60 * 60)}-{(window + 1) * timestep * 60 * 60} sec UTC)")
 
-        figure_out = os.path.join("out", f"{params['Date']}_{window * 3}_{(window + 1) * 3}")
+        # Generating the necessary directories.
+        if not os.path.exists(os.path.join("out", params['Output-dir-name'])):
+            os.mkdir(os.path.join("out", params['Output-dir-name']))
         if not os.path.exists("out"):
             os.mkdir("out")
+
+        figure_out = os.path.join("out", params['Output-dir-name'], f"{params['Date']}_{window * timestep}_{(window + 1) * timestep}")
 
         plt.savefig(figure_out)
         plt.close()
 
 
-# Change for the corresponding NCDF4 dataset.
-filename = 'PERSIANN-20230427_00_21/PERSIANN_2023-05-11090801am.nc'
-
-# Parameters to change the title and date of case.
-params = {
-    'Title' : 'April 27 Case',
-    'Date'  : '20230427'
-}
-
+shp_name = os.path.join("Shapefile", "County.shp")
 plot_data(filename, params)
+print("Done.")
