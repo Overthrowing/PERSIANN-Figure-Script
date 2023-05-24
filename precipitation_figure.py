@@ -13,10 +13,19 @@ from cartopy.mpl.gridliner import LATITUDE_FORMATTER, LONGITUDE_FORMATTER
 from cartopy.io.shapereader import Reader
 from cartopy.feature import ShapelyFeature
 
-shp_name = os.path.join("Shapefile", "County.shp")
+
+# Change for the corresponding NCDF4 dataset.
+filename = 'PDIR-files/PDIR-Nicholas-Data/PDIR_2023-05-24022800pm.nc'
+
+# Parameters to change the title and date of case.
+params = {
+    'Title'             : 'Hurricane Nicholas data - PDIR',
+    'Output-dir-name'   : 'Nicholas-Data-3hr',
+    'Date'              : '20210914-15'
+}
 
 # The PERSIANN timestep from download.
-timestep = 1
+timestep = 3
 
 def read_NCDF4(filename):
     dataset = netCDFFile(filename, 'r')
@@ -60,25 +69,18 @@ def plot_data(filename, params):
 
         plt.title(params['Title'] + f" ({(window * timestep * 60 * 60)}-{(window + 1) * timestep * 60 * 60} sec UTC)")
 
-        if not os.path.exists(os.path.join("out", params['Date'])):
-            os.mkdir(os.path.join("out", params['Date']))
-
-        figure_out = os.path.join("out", params['Date'], f"{params['Date']}_{window * timestep}_{(window + 1) * timestep}")
+        # Generating the necessary directories.
+        if not os.path.exists(os.path.join("out", params['Output-dir-name'])):
+            os.mkdir(os.path.join("out", params['Output-dir-name']))
         if not os.path.exists("out"):
             os.mkdir("out")
+
+        figure_out = os.path.join("out", params['Output-dir-name'], f"{params['Date']}_{window * timestep}_{(window + 1) * timestep}")
 
         plt.savefig(figure_out)
         plt.close()
 
 
-# Change for the corresponding NCDF4 dataset.
-filename = 'PERSIANN-files/PERSIANN_20230507/PERSIANN_2023-05-17080330pm.nc'
-
-# Parameters to change the title and date of case.
-params = {
-    'Title' : 'May 07 Case',
-    'Date'  : '20230507'
-}
-
+shp_name = os.path.join("Shapefile", "County.shp")
 plot_data(filename, params)
 print("Done.")
